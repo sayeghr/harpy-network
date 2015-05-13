@@ -8,3 +8,9 @@ __pycache__/
 # VirtualEnvironment
 venv
 
+# PyCharm files
+.idea
+
+# Distribution files
+config.py
+app.db
