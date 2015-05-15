@@ -1,0 +1,8 @@
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+secret_key = 'super_secret_key'
+
+class Config(object):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
