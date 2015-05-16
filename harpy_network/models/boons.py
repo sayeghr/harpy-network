@@ -8,6 +8,7 @@ class Boon(db.Model):
     creditor_id = db.Column(db.Integer, db.ForeignKey('character.id'))
     weight = db.Column(db.String(20))
     comment = db.Column(db.Text)
+    paid = db.Column(db.Boolean, default=False)
 
     debtor = db.relationship("Character", foreign_keys=debtor_id, backref=db.backref("boons_owed"))
     creditor = db.relationship("Character", foreign_keys=creditor_id, backref=db.backref("boons_earned"))
