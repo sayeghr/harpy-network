@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>The Harpy Network</title>
+  {% block meta %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% endblock %}
+
+  {% block scripts %}
+    <script src={{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}></script>
+  {% endblock %}
+
+  {% block css %}
+    <link href={{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }} rel="stylesheet">
+    <link href={{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap-theme.min.css') }} rel="stylesheet">
+  {% endblock %}
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">The Harpy Network</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="#">Kindred</a></li>
+            <li><a href="#">Prestation</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Login</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+  </div>
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+
+</body>
+</html>
