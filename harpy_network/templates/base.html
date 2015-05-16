@@ -39,11 +39,38 @@
             <li><a href="#">Prestation</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Login</a></li>
+            {% if current_user.is_authenticated() %}
+              <li><a href="/logout">Logout</a></li>
+            {% else %}
+              <li><a href="/login">Login</a></li>
+            {% endif %}
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
+  </div>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+          {% for category, message in messages %}
+            {% if category == "message" %}
+              {% set alert_class = "alert-success" %}
+            {% elif category == "error" %}
+              {% set alert_class = "alert-danger" %}
+            {% elif category == "info" %}
+              {% set alert_class = "alert-info" %}
+            {% elif category == "warning" %}
+              {% set alert_class = "alert-warning" %}
+            {% else %}
+              {% set alert_class = "alert-warning" %}
+            {% endif %}
+            <div class="alert {{ alert_class }} alert-dismissible" role="alert">
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+    {% endwith %}
   </div>
   <div class="container">
     {% block content %}

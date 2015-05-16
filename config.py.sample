@@ -6,3 +6,9 @@ secret_key = 'super_secret_key'
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    DEBUG = True
+
+class TestConfig(object):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test.db')
+    TESTING = True
+    WTF_CSRF_ENABLED = False
