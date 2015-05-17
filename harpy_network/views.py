@@ -1,9 +1,10 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.login import login_user, logout_user
 
-from harpy_network import app, login_manager
+from harpy_network import app, db, login_manager
 from harpy_network.models.users import User
-from harpy_network.forms import LoginForm
+from harpy_network.models.characters import Character
+from harpy_network.forms import LoginForm, AddCharacterForm
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -33,3 +34,20 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('landing_page'))
+
+@app.route('/kindred')
+def view_kindred():
+    characters = Character.query.all()
+    return render_template('kindred.html', characters=characters)
+
+@app.route('/kindred/add', methods=['GET', 'POST'])
+def add_kindred():
+    form = AddCharacterForm()
+    if form.validate_on_submit():
+        new_kindred = Character(form.name.data)
+        db.session.add(new_kindred)
+        db.session.commit()
+        return redirect(url_for('view_kindred'))
+    else:
+        render_template('add_kindred.html', form=form)
+    return render_template('add_kindred.html', form=form)

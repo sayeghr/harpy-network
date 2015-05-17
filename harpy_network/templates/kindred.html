@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block kindred_active %}active{% endblock %}
+
+{% block content %}
+  {% for character in characters %}
+    <div>
+      {{ character.name }}
+    </div>
+  {% endfor %}
+  <a href="/kindred/add" class="btn btn-default">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Kindred
+  </a>
+{% endblock %}
