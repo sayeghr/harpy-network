@@ -4,6 +4,7 @@ from flask.ext.login import login_user, logout_user
 from harpy_network import app, db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
+from harpy_network.models.boons import Boon
 from harpy_network.forms import LoginForm, AddCharacterForm
 
 @login_manager.user_loader
@@ -51,3 +52,8 @@ def add_kindred():
     else:
         render_template('add_kindred.html', form=form)
     return render_template('add_kindred.html', form=form)
+
+@app.route('/prestation')
+def view_boons():
+    boons = Boon.query.filter_by(paid=False).all()
+    return render_template('prestation.html', boons=boons)

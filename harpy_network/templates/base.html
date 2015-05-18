@@ -36,7 +36,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li class="{% block kindred_active %}{% endblock %}"><a href="/kindred">Kindred</a></li>
-            <li><a href="#">Prestation</a></li>
+            <li class="{% block prestation_active %}{% endblock %}"><a href="/prestation">Prestation</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated() %}

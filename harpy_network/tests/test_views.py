@@ -99,3 +99,10 @@ class TestViews(TestCase):
         db.session.commit()
         loaded_user = load_user(str(user.id))
         self.assertEqual(user, loaded_user)
+
+    def test_view_prestation(self):
+        with self.client:
+            response = self.client.get('/prestation',
+                                       follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the view boons endpoint.")
+            self.assertIsNotNone(self.get_context_variable('boons'), "Boons was not sent to the template.")

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block prestation_active %}active{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src={{ url_for('static', filename='vendor/datatables/media/js/jquery.dataTables.min.js') }}></script>
+  <script src={{ url_for('static', filename='vendor/datatables-bootstrap3-plugin/media/js/datatables-bootstrap3.min.js') }}></script>
+  <script src={{ url_for('static', filename='js/prestation.js') }}></script>
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link href={{ url_for('static', filename='vendor/font-awesome/css/font-awesome.min.css') }} rel="stylesheet">
+  <link href={{ url_for('static', filename='vendor/datatables-bootstrap3-plugin/media/css/datatables-bootstrap3.min.css') }} rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+    <table width="100%" id="prestation-table" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+              <th>Debtor</th>
+              <th>Creditor</th>
+              <th>Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for boon in boons %}
+            <tr>
+              <td>{{ boon.debtor.name }}</td>
+              <td>{{ boon.creditor.name }}</td>
+              <td>{{ boon.weight }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  <a href="/prestation/add" class="btn btn-default">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Prestation
+  </a>
+{% endblock %}
