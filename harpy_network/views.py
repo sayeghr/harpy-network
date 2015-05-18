@@ -60,5 +60,7 @@ def view_boons():
 
 @app.route('/prestation/add', methods=['GET', 'POST'])
 def add_prestation():
+    if request.method == "POST":
+        pass
     characters = Character.query.all()
     return render_template('add_prestation.html', characters=characters)
