@@ -57,3 +57,8 @@ def add_kindred():
 def view_boons():
     boons = Boon.query.filter_by(paid=False).all()
     return render_template('prestation.html', boons=boons)
+
+@app.route('/prestation/add', methods=['GET', 'POST'])
+def add_prestation():
+    characters = Character.query.all()
+    return render_template('add_prestation.html', characters=characters)

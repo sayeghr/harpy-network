@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src={{ url_for('static', filename='vendor/select2/dist/js/select2.full.min.js') }}></script>
+  <script src={{ url_for('static', filename='js/add-prestation.js') }}></script>
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link href={{ url_for('static', filename='vendor/select2/dist/css/select2.min.css') }} rel="stylesheet">
+  <link href={{ url_for('static', filename='vendor/select2-bootstrap-theme/dist/select2-bootstrap.min.css') }} rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<form>
+<div class="col-md-4">
+    <label for="debtor-id">Select Debtor:</label>
+    <select class="form-control select2" style="width: 100%" id="debtor-id">
+    <option></option>
+    {% for character in characters %}
+      <option value="{{ character.id }}">{{ character.name }}</option>
+    {% endfor %}
+    </select>
+</div>
+<div class="col-md-4">
+    <label for="creditor-id">Select Creditor:</label>
+    <select class="form-control select2" style="width: 100%" id="creditor-id">
+    <option></option>
+    {% for character in characters %}
+      <option value="{{ character.id }}">{{ character.name }}</option>
+    {% endfor %}
+    </select>
+</div>
+<div class="col-md-4">
+    <label for="boon-weight">Select Weight:</label>
+    <select class="form-control select2" style="width: 100%" id="boon-weight">
+    <option></option>
+    <option value="trivial">Trivial Boon</option>
+    <option value="minor">Minor Boon</option>
+    <option value="major">Major Boon</option>
+    <option value="blood">Blood Boon</option>
+    <option value="life">Life Boon</option>
+    </select>
+</div>
+</form>
+{%  endblock %}
