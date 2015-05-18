@@ -13,6 +13,19 @@ class Boon(db.Model):
     debtor = db.relationship("Character", foreign_keys=debtor_id, backref=db.backref("boons_owed"))
     creditor = db.relationship("Character", foreign_keys=creditor_id, backref=db.backref("boons_earned"))
 
+    @property
+    def weight_string(self):
+        if self.weight == "trivial":
+            return "Trivial Boon"
+        elif self.weight == "minor":
+            return "Minor Boon"
+        elif self.weight == "major":
+            return "Major Boon"
+        elif self.weight == "blood":
+            return "Blood Boon"
+        elif self.weight == "life":
+            return "Life Boon"
+
     def __init__(self, debtor, creditor, weight):
         self.debtor = debtor
         self.creditor = creditor

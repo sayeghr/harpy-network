@@ -5,7 +5,7 @@ from harpy_network import app, db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
-from harpy_network.forms import LoginForm, AddCharacterForm
+from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -60,7 +60,18 @@ def view_boons():
 
 @app.route('/prestation/add', methods=['GET', 'POST'])
 def add_prestation():
+    form = AddBoonForm()
     if request.method == "POST":
-        pass
+        if form.validate_on_submit():
+            debtor = form.debtor.data
+            creditor = form.creditor.data
+            new_boon = Boon(debtor, creditor, form.boon_weight.data)
+            db.session.add(new_boon)
+            db.session.commit()
+            return redirect(url_for('view_boons'))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(field + ": "+ error, "error")
     characters = Character.query.all()
-    return render_template('add_prestation.html', characters=characters)
+    return render_template('add_prestation.html', characters=characters, form=form)
