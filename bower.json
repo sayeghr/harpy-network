@@ -13,6 +13,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "~3.3.4",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "datatables-bootstrap3-plugin": "~0.4.0"
   }
 }
