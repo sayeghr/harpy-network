@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask.ext.login import login_user, logout_user
 
 from harpy_network import app, db, login_manager
@@ -58,6 +58,22 @@ def view_boons():
     boons = Boon.query.filter_by(paid=False).all()
     return render_template('prestation.html', boons=boons)
 
+@app.route('/prestation/<int:boon_id>')
+def view_boon(boon_id):
+    boon = Boon.query.filter_by(id=boon_id).first()
+    if not boon:
+        abort(404)
+    return render_template('view_boon.html', boon=boon)
+
+@app.route('/prestation/<int:boon_id>/paid')
+def mark_boon_paid(boon_id):
+    boon = Boon.query.filter_by(id=boon_id).first()
+    boon.paid = True
+    db.session.commit()
+    if not boon:
+        abort(404)
+    return redirect(url_for('view_boon', boon_id=boon.id))
+
 @app.route('/prestation/add', methods=['GET', 'POST'])
 def add_prestation():
     form = AddBoonForm()
@@ -66,6 +82,7 @@ def add_prestation():
             debtor = form.debtor.data
             creditor = form.creditor.data
             new_boon = Boon(debtor, creditor, form.boon_weight.data)
+            new_boon.comment = form.comment.data
             db.session.add(new_boon)
             db.session.commit()
             return redirect(url_for('view_boons'))

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <dl class="dl-horizontal">
+  <dt>Debtor</dt>
+  <dd>{{ boon.debtor.name }}</dd>
+  <dt>Creditor</dt>
+  <dd>{{ boon.creditor.name }}</dd>
+  <dt>Weight</dt>
+  <dd>{{ boon.weight_string }}</dd>
+  <dt>Comment</dt>
+  <dd>{{ boon.comment }}</dd>
+  <dt>Paid</dt>
+  <dd>{% if boon.paid %}Yes {% else %}No {% endif %}</dd>
+  </dl>
+  {% if not boon.paid %}
+  <a href="/prestation/{{ boon.id }}/paid" class="btn btn-default">
+    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Mark Boon as Paid
+  </a>
+  {% endif %}
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import Field, StringField, PasswordField, SelectField
+from wtforms import Field, StringField, PasswordField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 from harpy_network.models.characters import Character
@@ -63,4 +63,4 @@ class AddBoonForm(Form):
                                           ("life", "Life Boon"),
                                       ],
                               validators=[DataRequired()])
-
+    comment = TextAreaField("Comments", validators=[])
