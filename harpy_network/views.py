@@ -36,6 +36,7 @@ def login():
             return render_template('login.html', form=form)
         flash('Logged in successfully.')
         next_url = request.args.get('next')
+        print(request, request.args, next_url)
         return redirect(next_url or url_for('views.landing_page'))
     return render_template('login.html', form=form)
 
