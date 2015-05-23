@@ -12,6 +12,12 @@
   <dd>{{ boon.comment }}</dd>
   <dt>Paid</dt>
   <dd>{% if boon.paid %}Yes {% else %}No {% endif %}</dd>
+  <dt>Created At</dt>
+  <dd>{{ boon.created_at|strftime }}</dd>
+  {% if boon.paid %}
+  <dt>Paid At</dt>
+  <dd>{{ boon.paid_at|strftime }}</dd>
+  {% endif %}
   </dl>
   {% if not boon.paid %}
   <a href="/prestation/{{ boon.id }}/paid" class="btn btn-default">

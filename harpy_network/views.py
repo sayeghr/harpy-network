@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask.ext.login import login_user, logout_user
 
@@ -10,6 +12,10 @@ from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(id=int(user_id)).first()
+
+@app.template_filter('strftime')
+def _jinja2_filter_datetime(dateobj):
+    return dateobj.strftime('%Y-%m-%d')
 
 @app.route("/")
 def landing_page():
@@ -69,6 +75,7 @@ def view_boon(boon_id):
 def mark_boon_paid(boon_id):
     boon = Boon.query.filter_by(id=boon_id).first()
     boon.paid = True
+    boon.paid_at = datetime.now()
     db.session.commit()
     if not boon:
         abort(404)
