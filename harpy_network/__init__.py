@@ -4,13 +4,25 @@ from flask.ext.login import LoginManager
 
 import config
 
-app = Flask(__name__)
-app.config.from_object(config.Config)
-app.secret_key = config.secret_key
-db = SQLAlchemy(app)
-
-# Initialize Flask-Login
+db = SQLAlchemy()
 login_manager = LoginManager()
-login_manager.init_app(app)
 
-import harpy_network.views
+def create_app(config_object):
+
+    app = Flask(__name__)
+    app.config.from_object(config_object)
+    app.secret_key = config.secret_key
+    db.init_app(app)
+
+    # Initialize Flask-Login
+
+    login_manager.init_app(app)
+
+    # Initialize Blueprints
+    from harpy_network.views import views
+    app.register_blueprint(views)
+
+    return app
+
+app = create_app(config.Config)
+

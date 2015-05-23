@@ -1,27 +1,29 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request, abort
-from flask.ext.login import login_user, logout_user
+from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
+from flask.ext.login import login_user, logout_user, login_required
 
-from harpy_network import app, db, login_manager
+from harpy_network import db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
 from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm
 
+views = Blueprint('views', __name__, template_folder='templates')
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(id=int(user_id)).first()
 
-@app.template_filter('strftime')
+@views.app_template_filter('strftime')
 def _jinja2_filter_datetime(dateobj):
     return dateobj.strftime('%Y-%m-%d')
 
-@app.route("/")
+@views.route("/")
 def landing_page():
     return render_template("landing_page.html")
 
-@app.route('/login', methods=['GET', 'POST'])
+@views.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -34,44 +36,49 @@ def login():
             return render_template('login.html', form=form)
         flash('Logged in successfully.')
         next_url = request.args.get('next')
-        return redirect(next_url or url_for('landing_page'))
+        return redirect(next_url or url_for('views.landing_page'))
     return render_template('login.html', form=form)
 
-@app.route('/logout')
+@views.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('landing_page'))
+    return redirect(url_for('views.landing_page'))
 
-@app.route('/kindred')
+@views.route('/kindred')
+@login_required
 def view_kindred():
     characters = Character.query.all()
     return render_template('kindred.html', characters=characters)
 
-@app.route('/kindred/add', methods=['GET', 'POST'])
+@views.route('/kindred/add', methods=['GET', 'POST'])
+@login_required
 def add_kindred():
     form = AddCharacterForm()
     if form.validate_on_submit():
         new_kindred = Character(form.name.data)
         db.session.add(new_kindred)
         db.session.commit()
-        return redirect(url_for('view_kindred'))
+        return redirect(url_for('views.view_kindred'))
     else:
         render_template('add_kindred.html', form=form)
     return render_template('add_kindred.html', form=form)
 
-@app.route('/prestation')
+@views.route('/prestation')
+@login_required
 def view_boons():
     boons = Boon.query.filter_by(paid=False).all()
     return render_template('prestation.html', boons=boons)
 
-@app.route('/prestation/<int:boon_id>')
+@views.route('/prestation/<int:boon_id>')
+@login_required
 def view_boon(boon_id):
     boon = Boon.query.filter_by(id=boon_id).first()
     if not boon:
         abort(404)
     return render_template('view_boon.html', boon=boon)
 
-@app.route('/prestation/<int:boon_id>/paid')
+@views.route('/prestation/<int:boon_id>/paid')
+@login_required
 def mark_boon_paid(boon_id):
     boon = Boon.query.filter_by(id=boon_id).first()
     boon.paid = True
@@ -79,9 +86,10 @@ def mark_boon_paid(boon_id):
     db.session.commit()
     if not boon:
         abort(404)
-    return redirect(url_for('view_boon', boon_id=boon.id))
+    return redirect(url_for('views.view_boon', boon_id=boon.id))
 
-@app.route('/prestation/add', methods=['GET', 'POST'])
+@views.route('/prestation/add', methods=['GET', 'POST'])
+@login_required
 def add_prestation():
     form = AddBoonForm()
     if request.method == "POST":
@@ -92,7 +100,7 @@ def add_prestation():
             new_boon.comment = form.comment.data
             db.session.add(new_boon)
             db.session.commit()
-            return redirect(url_for('view_boons'))
+            return redirect(url_for('views.view_boons'))
         else:
             for field, errors in form.errors.items():
                 for error in errors:

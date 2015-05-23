@@ -1,7 +1,7 @@
 from flask.ext.testing import TestCase
 from flask.ext.login import current_user
 
-from harpy_network import app, db
+from harpy_network import create_app, db
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.views import load_user
@@ -12,7 +12,7 @@ class TestViews(TestCase):
     #render_templates = False
 
     def create_app(self):
-        app.config.from_object(TestConfig)
+        app = create_app(TestConfig)
         return app
 
     def setUp(self):
