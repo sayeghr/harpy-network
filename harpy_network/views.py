@@ -1,13 +1,13 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required, current_user
 
 from harpy_network import db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
-from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm
+from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm, ChangePasswordForm
 
 views = Blueprint('views', __name__, template_folder='templates')
 
@@ -108,3 +108,23 @@ def add_prestation():
                     flash(field + ": "+ error, "error")
     characters = Character.query.all()
     return render_template('add_prestation.html', characters=characters, form=form)
+
+@views.route('/profile')
+@login_required
+def view_profile():
+    password_form = ChangePasswordForm()
+    return render_template('profile.html', password_form=password_form)
+
+@views.route('/profile/password', methods=['POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current_user.set_password(form.password.data)
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your password has been changed.')
+        return redirect(url_for('views.view_profile'))
+    else:
+        return render_template('profile.html', password_form=form)
+

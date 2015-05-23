@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import Field, StringField, PasswordField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length, ValidationError, EqualTo
 
 from harpy_network.models.characters import Character
 
@@ -45,6 +45,12 @@ class CharacterField(Field):
 class LoginForm(Form):
     email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+
+class ChangePasswordForm(Form):
+    password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password',
+                                                                             message="The Passwords do not match.")])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
 
 
 class AddCharacterForm(Form):
