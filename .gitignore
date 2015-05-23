@@ -14,5 +14,6 @@ venv
 
 # Distribution files
 config.py
+alembic.ini
 app.db
 test.db
