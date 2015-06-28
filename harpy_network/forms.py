@@ -70,3 +70,18 @@ class AddBoonForm(Form):
                                       ],
                               validators=[DataRequired()])
     comment = TextAreaField("Comments", validators=[])
+
+class EditBoonForm(Form):
+    debtor = CharacterField("Debtor", validators=[DataRequired(),
+                                                  NotEqualTo('creditor',
+                                                             message="The Debtor cannot be the same as the Creditor.")])
+    creditor = CharacterField("Creditor", validators=[DataRequired()])
+    boon_weight = SelectField("Boon Weight",
+                              choices=[("trivial", "Trivial Boon"),
+                                          ("minor", "Minor Boon"),
+                                          ("major", "Major Boon"),
+                                          ("blood", "Blood Boon"),
+                                          ("life", "Life Boon"),
+                                      ],
+                              validators=[DataRequired()])
+    comment = TextAreaField("Comments", validators=[])

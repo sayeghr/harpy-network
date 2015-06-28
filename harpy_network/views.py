@@ -7,7 +7,7 @@ from harpy_network import db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
-from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm, ChangePasswordForm
+from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm, EditBoonForm, ChangePasswordForm
 
 views = Blueprint('views', __name__, template_folder='templates')
 
@@ -77,6 +77,25 @@ def view_boon(boon_id):
     if not boon:
         abort(404)
     return render_template('view_boon.html', boon=boon)
+
+@views.route('/prestation/<int:boon_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_boon(boon_id):
+    boon = Boon.query.filter_by(id=boon_id).first()
+    if not boon:
+        abort(404)
+    form = EditBoonForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            print(form.boon_weight.data)
+            boon.debtor = form.debtor.data
+            boon.creditor = form.creditor.data
+            boon.weight = form.boon_weight.data
+            boon.comment = form.comment.data
+            db.session.commit()
+            return redirect(url_for('views.view_boon', boon_id=boon.id))
+    characters = Character.query.all()
+    return render_template('edit_boon.html', boon=boon, characters=characters, form=form)
 
 @views.route('/prestation/<int:boon_id>/paid')
 @login_required

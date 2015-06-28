@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src={{ url_for('static', filename='vendor/select2/dist/js/select2.full.min.js') }}></script>
+  <script src={{ url_for('static', filename='js/edit-prestation.js') }}></script>
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link href={{ url_for('static', filename='vendor/select2/dist/css/select2.min.css') }} rel="stylesheet">
+  <link href={{ url_for('static', filename='vendor/select2-bootstrap-theme/dist/select2-bootstrap.min.css') }} rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div>
+    <form method="POST" action="/prestation/{{ boon.id }}/edit" role="form">
+    {{ form.csrf_token }}
+    <div class="form-group">
+        <label for="debtor-id">Select Debtor:</label>
+        <select class="form-control select2" style="width: 100%" name="debtor" id="debtor-id">
+        <option></option>
+        {% for character in characters %}
+          <option value="{{ character.id }}" {% if character.id == boon.debtor.id  %}selected{% endif %}>{{ character.name }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="creditor-id">Select Creditor:</label>
+        <select class="form-control select2" style="width: 100%" name="creditor" id="creditor-id">
+        <option></option>
+        {% for character in characters %}
+          <option value="{{ character.id }}" {% if character.id == boon.creditor.id  %}selected{% endif %}>{{ character.name }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="boon-weight">Select Weight:</label>
+        <select class="form-control select2" style="width: 100%" name="boon_weight" id="boon-weight">
+        <option></option>
+        <option value="trivial" {% if boon.weight == 'trivial' %}selected{% endif %}>Trivial Boon</option>
+        <option value="minor" {% if boon.weight == 'minor' %}selected{% endif %}>Minor Boon</option>
+        <option value="major" {% if boon.weight == 'major' %}selected{% endif %}>Major Boon</option>
+        <option value="blood" {% if boon.weight == 'blood' %}selected{% endif %}>Blood Boon</option>
+        <option value="life" {% if boon.weight == 'life' %}selected{% endif %}>Life Boon</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="comment">Comments:</label>
+        <textarea class="form-control" rows="5" id="comment" name="comment">{{ boon.comment }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-default">Save</button>
+    </form>
+  </div>
+{% endblock %}
