@@ -7,7 +7,8 @@ from harpy_network import db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
-from harpy_network.forms import LoginForm, AddCharacterForm, AddBoonForm, EditBoonForm, ChangePasswordForm
+from harpy_network.forms import LoginForm, AddCharacterForm, EditCharacterForm, AddBoonForm, EditBoonForm, \
+    ChangePasswordForm
 
 views = Blueprint('views', __name__, template_folder='templates')
 
@@ -47,7 +48,7 @@ def logout():
 
 @views.route('/kindred')
 @login_required
-def view_kindred():
+def view_all_kindred():
     characters = Character.query.all()
     return render_template('kindred.html', characters=characters)
 
@@ -59,10 +60,35 @@ def add_kindred():
         new_kindred = Character(form.name.data)
         db.session.add(new_kindred)
         db.session.commit()
-        return redirect(url_for('views.view_kindred'))
+        return redirect(url_for('views.view_all_kindred'))
     else:
         render_template('add_kindred.html', form=form)
     return render_template('add_kindred.html', form=form)
+
+@views.route('/kindred/<int:character_id>')
+@login_required
+def view_kindred(character_id):
+    character = Character.query.filter_by(id=character_id).first()
+    if not character:
+        abort(404)
+    return render_template('view_kindred.html', character=character)
+
+@views.route('/kindred/<int:character_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_kindred(character_id):
+    character = Character.query.filter_by(id=character_id).first()
+    if not character:
+        abort(404)
+    form = EditCharacterForm()
+    if request.method == "GET":
+        form.name.data = character.name
+        form.id.data = character.id
+    if request.method == "POST":
+        if form.validate_on_submit():
+            character.name = form.name.data
+            db.session.commit()
+            return redirect(url_for('views.view_kindred', character_id=character.id))
+    return render_template('edit_kindred.html', character=character, form=form)
 
 @views.route('/prestation')
 @login_required
@@ -87,7 +113,6 @@ def edit_boon(boon_id):
     form = EditBoonForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            print(form.boon_weight.data)
             boon.debtor = form.debtor.data
             boon.creditor = form.creditor.data
             boon.weight = form.boon_weight.data

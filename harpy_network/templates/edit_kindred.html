@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_form %}
+
+{% block scripts %}
+  {{ super() }}
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+  <div>
+    {{ render_form(form, action_url='/kindred/'+character.id|string+'/edit', action_text='Save') }}
+  </div>
+{% endblock %}

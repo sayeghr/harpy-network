@@ -1,8 +1,17 @@
 from flask.ext.wtf import Form
-from wtforms import Field, StringField, PasswordField, SelectField, TextAreaField
+from wtforms import Field, StringField, PasswordField, SelectField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Length, ValidationError, EqualTo
 
 from harpy_network.models.characters import Character
+
+
+def unique_character_name(form, field):
+    character = Character.query.filter_by(name=field.data).first()
+    if character:
+        if hasattr(form, 'id') and character.id == int(form.id.data):
+            pass
+        else:
+            raise ValidationError('Kindred name is already in use.')
 
 class NotEqualTo(object):
     """
@@ -54,7 +63,11 @@ class ChangePasswordForm(Form):
 
 
 class AddCharacterForm(Form):
-    name = StringField('Name', validators=[DataRequired(), Length(max=254)])
+    name = StringField('Name', validators=[DataRequired(), Length(max=254), unique_character_name])
+
+class EditCharacterForm(Form):
+    id = HiddenField('ID', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired(), Length(max=254), unique_character_name])
 
 class AddBoonForm(Form):
     debtor = CharacterField("Debtor", validators=[DataRequired(),

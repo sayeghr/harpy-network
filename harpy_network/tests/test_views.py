@@ -58,7 +58,7 @@ class TestViews(TestCase):
             self.assert200(response, "Did not get a 200 response from the login url.")
             self.assertNotEqual(current_user, user, "The user was logged in with an invalid password.")
 
-    def test_view_kindred(self):
+    def test_view_all_kindred(self):
         kashif = Character("Kashif Al-Tariq")
         db.session.add(kashif)
         db.session.commit()
@@ -77,7 +77,7 @@ class TestViews(TestCase):
                                             'name': "Kashif Al-Tariq"
                                         },
                                         follow_redirects=True)
-            self.assert200(response, "Did not get a 200 resposne from the add kindred endpoint.")
+            self.assert200(response, "Did not get a 200 response from the add kindred endpoint.")
             kashif = Character.query.filter_by(name="Kashif Al-Tariq").first()
             self.assertIsNotNone(kashif, "The character was not created.")
 
@@ -92,6 +92,42 @@ class TestViews(TestCase):
                                         follow_redirects=True)
             self.assertEqual(len(Character.query.all()), 0,
                              "The add kindred method accepted a character with too many characters.")
+
+    def test_edit_kindred(self):
+        kashif = Character("Kashif Al-Tariq")
+        db.session.add(kashif)
+        db.session.commit()
+        self.assertTrue(kashif.name == "Kashif Al-Tariq")
+        self.assertTrue(kashif.id == 1)
+        with self.client:
+            response = self.client.post('/kindred/1/edit',
+                                        data={
+                                            'id': 1,
+                                            'name': "Kashif"
+                                        },
+                                        follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the edit kindred endpoint.")
+        kashif = Character.query.filter_by(id=1).first()
+        self.assertTrue(kashif.name == "Kashif", "The character name was not edited.")
+
+    def test_fail_edit_kindred(self):
+        kashif = Character("Kashif Al-Tariq")
+        artanis = Character("Artanis")
+        db.session.add(kashif)
+        db.session.add(artanis)
+        db.session.commit()
+        self.assertTrue(kashif.name == "Kashif Al-Tariq")
+        self.assertTrue(kashif.id == 1)
+        with self.client:
+            response = self.client.post('/kindred/1/edit',
+                                        data={
+                                            'id': 1,
+                                            'name': "Artanis"
+                                        },
+                                        follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the edit kindred endpoint.")
+        kashif = Character.query.filter_by(id=1).first()
+        self.assertTrue(kashif.name == "Kashif Al-Tariq", "The character name was not edited.")
 
     def test_load_user(self):
         user = User("test@test.com", "password")
