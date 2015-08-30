@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from harpy_network import create_app, db
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
+from harpy_network.models.boons import Boon
 from harpy_network.views import load_user
 from config import TestConfig
 
@@ -109,6 +110,31 @@ class TestViews(TestCase):
             self.assert200(response, "Did not get a 200 response from the edit kindred endpoint.")
         kashif = Character.query.filter_by(id=1).first()
         self.assertTrue(kashif.name == "Kashif", "The character name was not edited.")
+
+    def test_merge_kindred_view(self):
+        character1 = Character("Kashif Al-Tariq")
+        character2 = Character("Kashif")
+        character3 = Character("Artanis")
+        boon = Boon(character3, character2, "trivial")
+        boon2 = Boon(character3, character1, "trivial")
+        db.session.add(character1)
+        db.session.add(character2)
+        db.session.add(character3)
+        db.session.add(boon)
+        db.session.add(boon2)
+        db.session.commit()
+        assert boon not in character1.boons_earned, "The first character should not have boon 1 assigned."
+        assert boon in character2.boons_earned, "The boon was not recorded as being earned by character 2."
+        with self.client:
+            response = self.client.post('/kindred/{CHARACTER_ID}/merge'.format(CHARACTER_ID=character1.id),
+                                        data={
+                                            'merging_kindred': character2.id,
+                                        },
+                                        follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the merge kindred endpoint.")
+        assert boon in character1.boons_earned, "The boon was not transferred successfully."
+        assert boon2 in character1.boons_earned, "This boon should not have been removed."
+        assert boon not in character2.boons_earned, "The boon was not transferred successfully."
 
     def test_fail_edit_kindred(self):
         kashif = Character("Kashif Al-Tariq")

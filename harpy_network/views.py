@@ -8,7 +8,7 @@ from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
 from harpy_network.forms import LoginForm, AddCharacterForm, EditCharacterForm, AddBoonForm, EditBoonForm, \
-    ChangePasswordForm
+    ChangePasswordForm, MergeCharacterForm
 
 views = Blueprint('views', __name__, template_folder='templates')
 
@@ -98,6 +98,29 @@ def edit_kindred(character_id):
             db.session.commit()
             return redirect(url_for('views.view_kindred', character_id=character.id))
     return render_template('edit_kindred.html', character=character, form=form)
+
+
+@views.route('/kindred/<int:character_id>/merge', methods=['GET', 'POST'])
+@login_required
+def merge_kindred(character_id):
+    character = Character.query.filter_by(id=character_id).first()
+    if not character:
+        abort(404)
+    form = MergeCharacterForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            merging_character = form.merging_kindred.data
+            if merging_character != character:
+                # This shouldn't happen as the form will not display the current character.
+                character.merge_character(merging_character)
+                db.session.commit()
+            return redirect(url_for('views.view_kindred', character_id=character.id))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(field + ": " + error, "error")
+    characters = Character.query.filter(Character.id != character.id).all()
+    return render_template('merge_kindred.html', character=character, characters=characters, form=form)
 
 
 @views.route('/prestation')

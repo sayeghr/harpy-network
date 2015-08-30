@@ -13,6 +13,7 @@ def unique_character_name(form, field):
         else:
             raise ValidationError('Kindred name is already in use.')
 
+
 class NotEqualTo(object):
     """
     Compares the values of two fields.
@@ -44,6 +45,7 @@ class NotEqualTo(object):
 
             raise ValidationError(message % d)
 
+
 class CharacterField(Field):
 
     def process_formdata(self, valuelist):
@@ -65,9 +67,15 @@ class ChangePasswordForm(Form):
 class AddCharacterForm(Form):
     name = StringField('Name', validators=[DataRequired(), Length(max=254), unique_character_name])
 
+
 class EditCharacterForm(Form):
     id = HiddenField('ID', validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired(), Length(max=254), unique_character_name])
+
+
+class MergeCharacterForm(Form):
+    merging_kindred = CharacterField("Creditor", validators=[DataRequired()])
+
 
 class AddBoonForm(Form):
     debtor = CharacterField("Debtor", validators=[DataRequired(),
@@ -83,6 +91,7 @@ class AddBoonForm(Form):
                                       ],
                               validators=[DataRequired()])
     comment = TextAreaField("Comments", validators=[])
+
 
 class EditBoonForm(Form):
     debtor = CharacterField("Debtor", validators=[DataRequired(),
