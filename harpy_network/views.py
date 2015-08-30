@@ -12,17 +12,21 @@ from harpy_network.forms import LoginForm, AddCharacterForm, EditCharacterForm, 
 
 views = Blueprint('views', __name__, template_folder='templates')
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(id=int(user_id)).first()
+
 
 @views.app_template_filter('strftime')
 def _jinja2_filter_datetime(dateobj):
     return dateobj.strftime('%Y-%m-%d')
 
+
 @views.route("/")
 def landing_page():
     return render_template("landing_page.html")
+
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,16 +45,19 @@ def login():
         return redirect(next_url or url_for('views.landing_page'))
     return render_template('login.html', form=form)
 
+
 @views.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('views.landing_page'))
+
 
 @views.route('/kindred')
 @login_required
 def view_all_kindred():
     characters = Character.query.all()
     return render_template('kindred.html', characters=characters)
+
 
 @views.route('/kindred/add', methods=['GET', 'POST'])
 @login_required
@@ -65,6 +72,7 @@ def add_kindred():
         render_template('add_kindred.html', form=form)
     return render_template('add_kindred.html', form=form)
 
+
 @views.route('/kindred/<int:character_id>')
 @login_required
 def view_kindred(character_id):
@@ -72,6 +80,7 @@ def view_kindred(character_id):
     if not character:
         abort(404)
     return render_template('view_kindred.html', character=character)
+
 
 @views.route('/kindred/<int:character_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -90,11 +99,13 @@ def edit_kindred(character_id):
             return redirect(url_for('views.view_kindred', character_id=character.id))
     return render_template('edit_kindred.html', character=character, form=form)
 
+
 @views.route('/prestation')
 @login_required
 def view_boons():
     boons = Boon.query.filter_by(paid=False).all()
     return render_template('prestation.html', boons=boons)
+
 
 @views.route('/prestation/<int:boon_id>')
 @login_required
@@ -103,6 +114,7 @@ def view_boon(boon_id):
     if not boon:
         abort(404)
     return render_template('view_boon.html', boon=boon)
+
 
 @views.route('/prestation/<int:boon_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -122,6 +134,7 @@ def edit_boon(boon_id):
     characters = Character.query.all()
     return render_template('edit_boon.html', boon=boon, characters=characters, form=form)
 
+
 @views.route('/prestation/<int:boon_id>/paid')
 @login_required
 def mark_boon_paid(boon_id):
@@ -132,6 +145,7 @@ def mark_boon_paid(boon_id):
     if not boon:
         abort(404)
     return redirect(url_for('views.view_boon', boon_id=boon.id))
+
 
 @views.route('/prestation/add', methods=['GET', 'POST'])
 @login_required
@@ -153,11 +167,13 @@ def add_prestation():
     characters = Character.query.all()
     return render_template('add_prestation.html', characters=characters, form=form)
 
+
 @views.route('/profile')
 @login_required
 def view_profile():
     password_form = ChangePasswordForm()
     return render_template('profile.html', password_form=password_form)
+
 
 @views.route('/profile/password', methods=['POST'])
 @login_required
