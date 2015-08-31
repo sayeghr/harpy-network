@@ -117,14 +117,17 @@ class TestViews(TestCase):
         character3 = Character("Artanis")
         boon = Boon(character3, character2, "trivial")
         boon2 = Boon(character3, character1, "trivial")
+        boon3 = Boon(character2, character3, "minor")
         db.session.add(character1)
         db.session.add(character2)
         db.session.add(character3)
         db.session.add(boon)
         db.session.add(boon2)
+        db.session.add(boon3)
         db.session.commit()
         assert boon not in character1.boons_earned, "The first character should not have boon 1 assigned."
         assert boon in character2.boons_earned, "The boon was not recorded as being earned by character 2."
+        assert boon3 in character2.boons_owed, "The boon was not recorded as being owed by character 2."
         with self.client:
             response = self.client.post('/kindred/{CHARACTER_ID}/merge'.format(CHARACTER_ID=character1.id),
                                         data={
@@ -135,6 +138,8 @@ class TestViews(TestCase):
         assert boon in character1.boons_earned, "The boon was not transferred successfully."
         assert boon2 in character1.boons_earned, "This boon should not have been removed."
         assert boon not in character2.boons_earned, "The boon was not transferred successfully."
+        assert boon3 in character1.boons_owed, "The boon owed was not transferred successfully."
+        assert boon3 not in character2.boons_owed, "The boon owed was not transferred successfully."
 
     def test_fail_edit_kindred(self):
         kashif = Character("Kashif Al-Tariq")

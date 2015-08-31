@@ -13,8 +13,8 @@ class Character(db.Model):
         """
         Merges the provided character and it's associated boons to the instanced character object.
         """
-        for boon_earned in character.boons_earned:
+        for boon_earned in character.boons_earned[:]:
             boon_earned.creditor = self
-        for boon_owed in character.boons_owed:
+        for boon_owed in character.boons_owed[:]:
             boon_owed.debtor = self
         db.session.delete(character)

@@ -18,8 +18,11 @@ class TestCharacterModel(object):
         character3 = Character("Artanis")
         boon = Boon(character3, character2, "trivial")
         boon2 = Boon(character3, character1, "trivial")
+        boon3 = Boon(character2, character3, "minor")
+        boon4 = Boon(character2, character3, "minor")
         assert boon not in character1.boons_earned, "The first character should not have boon 1 assigned."
         assert boon in character2.boons_earned, "The boon was not recorded as being earned by character 2."
+        assert boon3 in character2.boons_owed, "The boon was not recorded as being owed by character 2."
         self.original_session = db.session  # Store the original session object so that we can restore it after.
         db.session = MagicMock()
         character1.merge_character(character2)
@@ -28,4 +31,7 @@ class TestCharacterModel(object):
         assert boon in character1.boons_earned, "The boon was not transferred successfully."
         assert boon2 in character1.boons_earned, "This boon should not have been removed."
         assert boon not in character2.boons_earned, "The boon was not transferred successfully."
+        assert boon3 in character1.boons_owed, "The boon owed was not transferred successfully."
+        assert boon4 in character1.boons_owed, "The second boon owed was not transferred successfully."
+        assert boon3 not in character2.boons_owed, "The boon owed was not transferred successfully."
 
