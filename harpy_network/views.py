@@ -35,7 +35,7 @@ def login():
         # Login and validate the user.
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.verify_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=True)
         else:
             flash('Invalid login credentials.', "error")
             return render_template('login.html', form=form)
