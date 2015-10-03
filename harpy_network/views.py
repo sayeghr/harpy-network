@@ -163,7 +163,7 @@ def edit_status_for_kindred(character_id, status_id):
         form.story.data = status.story
     if request.method == "POST":
         if form.validate_on_submit():
-            status.name = form.name.data
+            status.update_status_name(form.name.data)
             status.location_earned = form.location_earned.data
             status.story = form.story.data
             db.session.commit()

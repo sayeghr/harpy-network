@@ -58,6 +58,17 @@ class Status(db.Model):
     # relationships
     character = db.relationship("Character", foreign_keys=character_id, backref=db.backref("status"))
 
+    def update_status_name(self, name):
+        for status_trait in status_traits:
+            if name.lower() == status_trait.name.lower():
+                self.name = status_trait.name
+                self.type = status_trait.type
+                self.sect = status_trait.sect
+                break
+        else:
+            # Invalid status trait name
+            raise InvalidStatusTraitError
+
     def __init__(self, character, name, location_earned, story):
         self.character = character
         for status_trait in status_traits:
