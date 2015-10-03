@@ -110,16 +110,18 @@ class EditBoonForm(Form):
     comment = TextAreaField("Comments", validators=[])
 
 
-class AddStatusForm(Form):
-    status_choices = [(status_trait.name, status_trait.name) for status_trait in status_traits]
+status_choices = [(status_trait.name,
+                   "{STATUS_NAME} ({STATUS_TYPE})".format(STATUS_NAME=status_trait.name, STATUS_TYPE=status_trait.type))
+                  for status_trait in status_traits]
 
+
+class AddStatusForm(Form):
     name = SelectField("Status Trait", choices=status_choices, validators=[DataRequired()])
     location_earned = StringField('Location Earned', validators=[Length(max=254)])
     story = TextAreaField("Story/Details", validators=[])
 
-class EditStatusForm(Form):
-    status_choices = [(status_trait.name.lower(), status_trait.name) for status_trait in status_traits]
 
+class EditStatusForm(Form):
     name = SelectField("Status Trait", choices=status_choices, validators=[DataRequired()])
     location_earned = StringField('Location Earned', validators=[Length(max=254)])
     story = TextAreaField("Story/Details", validators=[])
