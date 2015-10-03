@@ -1,14 +1,15 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
+from flask import Blueprint, render_template, flash, redirect, url_for, request, abort, jsonify
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
 from harpy_network import db, login_manager
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
+from harpy_network.models.status import Status
 from harpy_network.forms import LoginForm, AddCharacterForm, EditCharacterForm, AddBoonForm, EditBoonForm, \
-    ChangePasswordForm, MergeCharacterForm
+    ChangePasswordForm, MergeCharacterForm, AddStatusForm, EditStatusForm
 
 views = Blueprint('views', __name__, template_folder='templates')
 
@@ -121,6 +122,66 @@ def merge_kindred(character_id):
                     flash(field + ": " + error, "error")
     characters = Character.query.filter(Character.id != character.id).all()
     return render_template('merge_kindred.html', character=character, characters=characters, form=form)
+
+
+@views.route('/kindred/<int:character_id>/status/<int:status_id>', methods=['GET', 'POST'])
+@login_required
+def view_status_for_kindred(character_id, status_id):
+    status = Status.query.filter_by(id=status_id, character_id=character_id).first()
+    if not status:
+        abort(404)
+    return render_template('view_status.html', status=status)
+
+
+@views.route('/kindred/<int:character_id>/status/add', methods=['GET', 'POST'])
+@login_required
+def add_status_to_kindred(character_id):
+    character = Character.query.filter_by(id=character_id).first()
+    if not character:
+        abort(404)
+    form = AddStatusForm()
+    if form.validate_on_submit():
+        new_status = Status(character, form.name.data, form.location_earned.data, form.story.data)
+        db.session.add(new_status)
+        db.session.commit()
+        return redirect(url_for('views.view_kindred', character_id=character_id))
+    else:
+        render_template('add_status.html', form=form)
+    return render_template('add_status.html', form=form)
+
+
+@views.route('/kindred/<int:character_id>/status/<int:status_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_status_for_kindred(character_id, status_id):
+    status = Status.query.filter_by(id=status_id, character_id=character_id).first()
+    if not status:
+        abort(404)
+    form = EditStatusForm()
+    if request.method == "GET":
+        form.name.data = status.name
+        form.location_earned.data = status.location_earned
+        form.story.data = status.story
+    if request.method == "POST":
+        if form.validate_on_submit():
+            status.name = form.name.data
+            status.location_earned = form.location_earned.data
+            status.story = form.story.data
+            db.session.commit()
+            return redirect(url_for('views.view_status_for_kindred', character_id=character_id, status_id=status_id))
+    return render_template('edit_status.html', form=form)
+
+
+@views.route('/kindred/<int:character_id>/status/<int:status_id>', methods=['DELETE'])
+@login_required
+def delete_status_for_kindred(character_id, status_id):
+    status = Status.query.filter_by(id=status_id, character_id=character_id).first()
+    if not status:
+        abort(404)
+    db.session.delete(status)
+    db.session.commit()
+    response = {'message': 'Status deleted.',
+            'redirect': url_for('views.view_kindred', character_id=character_id)}
+    return jsonify(response)
 
 
 @views.route('/prestation')

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src={{ url_for('static', filename='vendor/bootbox/bootbox.js') }}></script>
+  <script src={{ url_for('static', filename='js/view-status.js') }}></script>
+{% endblock %}
+
+{% block content %}
+  <dl class="dl-horizontal">
+  <dt>Status</dt>
+  <dd>{{ status.name }} ({{ status.type|capitalize }})</dd>
+  <dt>Location Earned</dt>
+  <dd>{{ status.location_earned }}</dd>
+  <dt>Story / Details</dt>
+  <dd>{{ status.story }}</dd>
+  <dt>Created At</dt>
+  <dd>{{ status.created_at|strftime }}</dd>
+  </dl>
+  <a href="{{ status.id|string }}/edit" class="btn btn-default">
+    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit Status
+  </a>
+  <button class="btn btn-default" id="remove-status">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove Status
+  </button>
+{% endblock %}

@@ -5,6 +5,7 @@ from harpy_network import create_app, db
 from harpy_network.models.users import User
 from harpy_network.models.characters import Character
 from harpy_network.models.boons import Boon
+from harpy_network.models.status import Status
 from harpy_network.views import load_user
 from config import TestConfig
 
@@ -173,3 +174,47 @@ class TestViews(TestCase):
                                        follow_redirects=True)
             self.assert200(response, "Did not get a 200 response from the view boons endpoint.")
             self.assertIsNotNone(self.get_context_variable('boons'), "Boons was not sent to the template.")
+
+    def test_view_status(self):
+        kashif = Character("Kashif Al-Tariq")
+        new_status = Status(kashif, "Acknowledged", "Burlington", "")
+        db.session.add(kashif)
+        db.session.add(new_status)
+        db.session.commit()
+        with self.client:
+            response = self.client.get('/kindred/{CHARACTER_ID}/status/{STATUS_ID}'.format(CHARACTER_ID=kashif.id,
+                                                                                           STATUS_ID=new_status.id),
+                                       follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the view status endpoint.")
+            self.assertIsNotNone(self.get_context_variable('status'), "Status was not sent to the template.")
+
+    def test_add_status(self):
+        kashif = Character("Kashif Al-Tariq")
+        db.session.add(kashif)
+        db.session.commit()
+        with self.client:
+            response = self.client.post('/kindred/{CHARACTER_ID}/status/add'.format(CHARACTER_ID=kashif.id),
+                                        data={
+                                            'name': "Acknowledged",
+                                            'location_earned': "Burlington, ON",
+                                            'story': "story"
+                                        },
+                                        follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the add status endpoint.")
+        assert kashif.status[0].name == "Acknowledged"
+        assert kashif.status[0].location_earned == "Burlington, ON"
+        assert kashif.status[0].story == "story"
+
+    def test_delete_status(self):
+        kashif = Character("Kashif Al-Tariq")
+        new_status = Status(kashif, "Acknowledged", "Burlington", "")
+        db.session.add(kashif)
+        db.session.add(new_status)
+        db.session.commit()
+        assert new_status in kashif.status
+        with self.client:
+            response = self.client.delete('/kindred/{CHARACTER_ID}/status/{STATUS_ID}'.format(CHARACTER_ID=kashif.id,
+                                                                                           STATUS_ID=new_status.id),
+                                       follow_redirects=True)
+            self.assert200(response, "Did not get a 200 response from the delete status endpoint.")
+        assert new_status not in kashif.status

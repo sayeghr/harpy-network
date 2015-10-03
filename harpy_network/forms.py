@@ -3,6 +3,7 @@ from wtforms import Field, StringField, PasswordField, SelectField, TextAreaFiel
 from wtforms.validators import DataRequired, Length, ValidationError, EqualTo
 
 from harpy_network.models.characters import Character
+from harpy_network.models.status import status_traits
 
 
 def unique_character_name(form, field):
@@ -107,3 +108,18 @@ class EditBoonForm(Form):
                                       ],
                               validators=[DataRequired()])
     comment = TextAreaField("Comments", validators=[])
+
+
+class AddStatusForm(Form):
+    status_choices = [(status_trait.name, status_trait.name) for status_trait in status_traits]
+
+    name = SelectField("Status Trait", choices=status_choices, validators=[DataRequired()])
+    location_earned = StringField('Location Earned', validators=[Length(max=254)])
+    story = TextAreaField("Story/Details", validators=[])
+
+class EditStatusForm(Form):
+    status_choices = [(status_trait.name.lower(), status_trait.name) for status_trait in status_traits]
+
+    name = SelectField("Status Trait", choices=status_choices, validators=[DataRequired()])
+    location_earned = StringField('Location Earned', validators=[Length(max=254)])
+    story = TextAreaField("Story/Details", validators=[])
