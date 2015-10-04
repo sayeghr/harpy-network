@@ -17,4 +17,6 @@ class Character(db.Model):
             boon_earned.creditor = self
         for boon_owed in character.boons_owed[:]:
             boon_owed.debtor = self
+        for status_trait in character.status[:]:
+            status_trait.character = self
         db.session.delete(character)
